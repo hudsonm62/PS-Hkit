@@ -1,0 +1,17 @@
+**/.cache
+**/.env
+**/testResults.xml
+**/coverage.xml
+**/*.log
+**/dist
+
+# tooling
+**/*.tar
+**/*.exe
+
+# mkdocs
+**/site
+
+# OS
+**/.DS_Store
+**/Thumbs.db

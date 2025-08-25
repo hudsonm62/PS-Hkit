@@ -1,0 +1,31 @@
+{
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "files.associations": {
+        "LICENSE": "txt",
+        "**/CODEOWNERS": "ignore"
+    },
+
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4,
+
+    "search.followSymlinks": false,
+    "search.smartCase": true,
+
+    "powershell.codeFormatting.preset": "OTBS",
+    "powershell.pester.codeLens": false,
+
+    "todo-tree.tree.showBadges": true,
+    "todo-tree.general.showActivityBarBadge": true,
+    "todo-tree.tree.buttons.groupByTag": false,
+    "todo-tree.tree.buttons.expand": false,
+    "todo-tree.tree.buttons.scanMode": false,
+    "todo-tree.tree.scanMode": "workspace",
+    "todo-tree.filtering.excludeGlobs": ["**/README.md"],
+
+    "git.enableCommitSigning": true,
+    "git.ignoreLimitWarning": true,
+    "cSpell.words": [
+        "Hkit"
+    ]
+}

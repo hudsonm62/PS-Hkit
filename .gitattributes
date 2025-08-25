@@ -1,2 +1,31 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+### OVERRIDES ###
+
+# CRLF => LF
+*.md            text  eol=lf
+*.gitattributes text  eol=lf
+*.gitignore     text  eol=lf
+*.svg           text  eol=lf
+*.jsonc         text  eol=lf
+*.json          text  eol=lf
+*.yml           text  eol=lf
+*.js            text  eol=lf
+*.scss          text  eol=lf
+*.prettierrc    text  eol=lf
+*.prettierignore text  eol=lf
+**/LICENSE      text  eol=lf
+
+# LF => CRLF
+*.ps1    text  eol=crlf
+*.psm1   text  eol=crlf
+*.psd1   text  eol=crlf
+*.psc1   text  eol=crlf
+*.ps1xml text  eol=crlf
+*.clixml text  eol=crlf
+*.xml    text  eol=crlf
+*.xaml   text  eol=crlf
+*.url    text  eol=crlf
+*.theme  text  eol=crlf
+*.reg    text  eol=crlf  working-tree-encoding=UTF-16LE-BOM
