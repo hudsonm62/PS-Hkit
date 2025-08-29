@@ -1,7 +1,11 @@
 function Test-Command {
+    [CmdletBinding()]
     param (
-        [string]$CommandName
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [string]$Name
     )
-    $command = Get-Command -Name $CommandName -ErrorAction SilentlyContinue
-    return $null -ne $command
+    process {
+        $command = Get-Command -Name $Name -ErrorAction SilentlyContinue
+        return $null -ne $command
+    }
 }
