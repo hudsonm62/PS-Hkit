@@ -123,15 +123,15 @@ Describe "Repair-NameConflict" {
 
 Describe "Test-Command" {
     It "should return $true for existing command" {
-        $result = Test-Command 'Write-Host'
+        $result = Test-Command Write-Host
         $result | Should -Be $true
     }
     It "should not error for non-existing command" {
-        $result = { Test-Command 'commandthatdoesntexist' }
+        $result = { Test-Command commandthatdoesntexist }
         $result | Should -Not -Throw
     }
     It "should return $false for non-existing command" {
-        $result = Test-Command 'commandthatdoesntexist'
+        $result = Test-Command commandthatdoesntexist
         $result | Should -Be $false
     }
 }
