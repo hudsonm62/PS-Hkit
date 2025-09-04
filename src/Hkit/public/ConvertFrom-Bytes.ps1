@@ -1,5 +1,6 @@
 function ConvertFrom-Bytes {
     [CmdletBinding(DefaultParameterSetName = 'GB')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Checked via switch')]
     param (
         [Parameter(Mandatory, ValueFromPipeline, Position = 0)]
         [long]$Bytes,
