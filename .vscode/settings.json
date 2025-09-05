@@ -25,7 +25,5 @@
 
     "git.enableCommitSigning": true,
     "git.ignoreLimitWarning": true,
-    "cSpell.words": [
-        "Hkit"
-    ]
+    "cSpell.words": ["Hkit"]
 }
