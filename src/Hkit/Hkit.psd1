@@ -16,13 +16,13 @@ GUID = '85b3e424-1d1b-4345-b617-3ed474e51d23'
 Author = 'Hudson M.'
 
 # Company or vendor of this module
-# CompanyName = 'Unknown'
+CompanyName = ''
 
 # Copyright statement for this module
-Copyright = '(c) Hudson M. All rights reserved.'
+Copyright = '(c) Hudson M.'
 
 # Description of the functionality provided by this module
-Description = 'PS Toolkit full of useful functions to Improve your life.'
+Description = 'PS functions to Improve QOL'
 
 # Minimum version of the PowerShell engine required by this module
 PowerShellVersion = '5.1'
@@ -90,10 +90,10 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        # Tags = @()
+        Tags = @('toolkit', 'sysadmin', 'utilities', 'windows', 'linux')
 
         # A URL to the license for this module.
-        # LicenseUri = ''
+        LicenseUri = ''
 
         # A URL to the main website for this project.
         ProjectUri = 'https://github.com/hudsonm62/PS-Hkit'
