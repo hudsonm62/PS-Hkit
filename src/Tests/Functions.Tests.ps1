@@ -30,7 +30,7 @@ Describe "ConvertFrom-Bytes" {
 
     It "should not round values" {
         $result = ConvertFrom-Bytes -Bytes $Bytes -NoRounding -GB
-        $result | Should -Be 11.4978094678372
+        [decimal]$result | Should -Be 11.4978094678372
     }
     It "should round to 3 decimal points" {
         $result = ConvertFrom-Bytes -Bytes $Bytes -GB -DecimalPlaces 3
@@ -86,7 +86,7 @@ Describe "Get-Uptime" {
         $result | Should -Not -BeNullOrEmpty
         $result | Should -BeOfType [TimeSpan]
     }
-} -Skip:($PSVersionTable.PSVersion.Major -ge 6)
+}
 
 Describe "Get-WindowsDisplayVersion" {
     It "should return the Windows display version" {

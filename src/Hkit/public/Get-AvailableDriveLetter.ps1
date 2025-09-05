@@ -32,7 +32,9 @@ function Get-AvailableDriveLetter {
         }
     }
 
-    [string[]]$FormattedExcluded = $ExcludedLetters | Format-Letter
+    [string[]]$FormattedExcluded = if($ExcludedLetters){
+        $ExcludedLetters | Format-Letter
+    }
     $Drives = Get-ChildItem -Path Function:[a-z]: -Name | Where-Object { $FormattedExcluded -notcontains $_ }
 
     $Available = $Drives | Where-Object { -not (Test-Path $_) }

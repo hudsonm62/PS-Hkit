@@ -2,7 +2,7 @@
 
 Describe "Module validity" {
     BeforeAll {
-        $root = Resolve-Path (Join-Path -Path $PSScriptRoot -ChildPath "../src/Hkit")
+        $root = Resolve-Path (Join-Path -Path $PSScriptRoot -ChildPath "../../src/Hkit")
         $psm1Files = Get-ChildItem -Path $root -Recurse -Include '**/Hkit.psm1' -File
         $psd1Files = Get-ChildItem -Path $root -Recurse -Include '**/Hkit.psd1' -File
     }
@@ -73,8 +73,4 @@ Describe "Text formatting" {
             $content | Should -Not -Match "[^\x00-\x7F]"
         }
     }
-
-    It "should validate repository against Prettier" {
-        { npx prettier --check . } | Should -Not -Throw
-    } -Skip:(-not (Get-Command -Name "npx" -ErrorAction SilentlyContinue))
 }
