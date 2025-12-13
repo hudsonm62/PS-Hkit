@@ -94,7 +94,7 @@ jobs:
           files: ${{ steps.zip.outputs.release_path }}
 
       - name: 🥨 Release Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: release_Hkit-${{ steps.check-tag.outputs.module_version }}
           path: ${{ steps.zip.outputs.release_path }}
