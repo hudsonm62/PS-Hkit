@@ -14,7 +14,7 @@ Describe "Assert-WindowsDevice" {
         } -Skip:($IsLinux -or $IsMacOS)
         It "should throw on non-Windows" {
             { Assert-WindowsDevice } | Should -Throw
-        } -Skip:($PSVersionTable.PSVersion.Major -ge 6 -and (-not $IsLinux -or -not $IsMacOS))
+        } -Skip:($PSVersionTable.PSVersion.Major -lt 6 -or -not ($IsLinux -or $IsMacOS))
     }
 }
 
@@ -172,7 +172,7 @@ Describe "Write-Console" {
     It "should write DEBUG level messages to the debug stream" {
         $result = Write-Console -Message "Test DEBUG" -Level "DEBUG" -Debug 5>&1
         $result.Message | Should -Be "Test DEBUG"
-    }
+    } -Skip:($PSVersionTable.PSVersion.Major -le 5) # prompts for confirmation, breaking tests
 
     It "should write ERROR level messages to the error stream" {
         { Write-Console -Message "Test ERROR" -Level "ERROR" -ErrorAction Stop } |
