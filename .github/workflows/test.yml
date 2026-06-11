@@ -106,7 +106,7 @@ jobs:
 
     steps:
       - name: 📥 Download Test artifacts
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v8
         id: test-artifacts
         with:
           path: test-artifacts
@@ -114,7 +114,7 @@ jobs:
           merge-multiple: false
 
       - name: 📥 Download Coverage artifacts
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v8
         id: coverage-artifacts
         with:
           path: coverage-artifacts
