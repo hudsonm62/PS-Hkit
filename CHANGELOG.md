@@ -10,6 +10,16 @@ The format is based on [Keep a Changelog] and this project adheres to [Semantic 
 
 ## [Unreleased]
 
+## [v1.1.1] - 2026-06-11
+
+### Fixed
+
+- `Split-Path` not working on module install
+
+### Changed
+
+- Release Notes link in manifest to this file.
+
 ## [v1.1.0] - 2026-06-11
 
 ### Added
