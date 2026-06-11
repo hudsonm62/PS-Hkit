@@ -25,10 +25,7 @@ function Get-AvailableDriveLetter {
     function Format-Letter {
         param ([Parameter(ValueFromPipeline, Mandatory)][string]$Letter)
         process {
-            $Letter = $Letter.ToUpper()
-            $Letter = $Letter.Replace(' ', '')
-            $Letter = $Letter.Replace(':', '')
-            return "$Letter`:"
+            return $Letter.ToUpper().Replace(' ', '').Replace(':', '') + ':'
         }
     }
 

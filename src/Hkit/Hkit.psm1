@@ -1,30 +1,26 @@
 [string]$Root = (Get-Item -Path $PSScriptRoot -Force)
-[string]$ModuleName = "Hkit"
+[string]$ModuleName = (Split-Path -Path $Root -Leaf)
 
 # paths
-$ManifestPath = Join-Path $Root "$ModuleName.psd1"
-$PublicPath = Join-Path $Root "public"
+$PublicPath  = Join-Path $Root "public"
 $PrivatePath = Join-Path $Root "private"
 $ClassesPath = Join-Path $Root "classes"
 
-$Manifest = Test-ModuleManifest $ManifestPath -ErrorAction Stop
-
-# get all module files for import/export
-$aliases = @()
+# get all files for import/export
 $public  = Get-ChildItem -Path $PublicPath  -Recurse -Force | Where-Object { $_.Extension -eq ".ps1" }
 $private = Get-ChildItem -Path $PrivatePath -Recurse -Force | Where-Object { $_.Extension -eq ".ps1" }
 $classes = Get-ChildItem -Path $ClassesPath -Recurse -Force | Where-Object { $_.Extension -eq ".ps1" }
 
 # Import all to session
-$public | ForEach-Object { . $_.FullName }
+$public  | ForEach-Object { . $_.FullName }
 $private | ForEach-Object { . $_.FullName }
 $classes | ForEach-Object { . $_.FullName }
 
 # Export 'public' functions (w/ aliases if present)
+$aliases = @()
 $public | ForEach-Object {
     $alias = Get-Alias -Definition $_.BaseName -ErrorAction SilentlyContinue
     if ($alias) {
-        # Export defined aliases
         $aliases += $alias
         Export-ModuleMember -Function $_.BaseName -Alias $alias
     } else {
@@ -33,22 +29,15 @@ $public | ForEach-Object {
     }
 }
 
-# Update the module manifest on changes
+# Complain if missing functions in manifest
+$ManifestPath = Join-Path $Root "$ModuleName.psd1"
+$Manifest = Test-ModuleManifest $ManifestPath -ErrorAction Stop
+
 $Added = $public | Where-Object {$_.BaseName -notin $Manifest.ExportedFunctions.Keys}
 $Removed = $Manifest.ExportedFunctions.Keys | Where-Object {$_ -notin $public.BaseName}
-$aliasesAdded = $aliases | Where-Object {$_ -notin $Manifest.ExportedAliases.Keys}
-$aliasesRemoved = $Manifest.ExportedAliases.Keys | Where-Object {$_ -notin $aliases}
-if ($Added -or $Removed -or $aliasesAdded -or $aliasesRemoved) {
-    try {
-        $updateModuleManifestParams = @{}
-        $updateModuleManifestParams.Add("Path", $ManifestPath)
-        $updateModuleManifestParams.Add("ErrorAction", "Stop")
-        if ($aliasesAdded.Count -gt 0) { $updateModuleManifestParams.Add("AliasesToExport", $aliases) }
-        if ($Added.Count -gt 0) { $updateModuleManifestParams.Add("FunctionsToExport", $public.BaseName) }
 
-        Update-ModuleManifest @updateModuleManifestParams
-    }
-    catch {
-        $_ | Write-Error
-    }
+$aliasesAdded = $aliases | Where-Object {$_.Name -notin $Manifest.ExportedAliases.Keys}
+$aliasesRemoved = $Manifest.ExportedAliases.Keys | Where-Object {$_ -notin $aliases.Name}
+if ($Added -or $Removed -or $aliasesAdded -or $aliasesRemoved) {
+    throw "Module manifest ExportedFunctions or ExportedAliases is out of date. Please update:`n Added Functions: $($Added.BaseName -join ', ')`n Removed Functions: $($Removed -join ', ')`n Added Aliases: $($aliasesAdded -join ', ')`n Removed Aliases: $($aliasesRemoved -join ', ')"
 }

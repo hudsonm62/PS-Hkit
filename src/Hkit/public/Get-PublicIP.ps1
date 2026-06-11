@@ -14,9 +14,9 @@ function Get-PublicIP {
     )
 
     if ($ForceIPv6) {
-        $uri = 'https://api6.ipify.org?format=json'
-    } else {
         $uri = 'https://api64.ipify.org?format=json'
+    } else {
+        $uri = 'https://api.ipify.org?format=json'
     }
 
     $r = Invoke-RestMethod -Uri $uri -ErrorAction Stop

@@ -1,0 +1,82 @@
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'psake')]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPositionalParameters', '', Justification = 'psake')] param()
+#region Props
+FormatTaskName "-------- {0} --------"
+Task default -Depends 'Lint', 'Test'
+
+properties {
+    $root = $PSScriptRoot
+    $ModuleSrc_Root = Join-Path $root "src"
+    $Module_Root = Join-Path $ModuleSrc_Root "Hkit"
+
+    # Pester Config
+    [PesterConfiguration]$PesterConfig = New-PesterConfiguration
+    $PesterConfig.Run.Exit = $false
+    $PesterConfig.TestResult.Enabled = $true
+    $PesterConfig.TestResult.OutputFormat = 'JUnitXml'
+    $PesterConfig.TestResult.OutputPath = Join-Path $root 'testResults.xml'
+    $PesterConfig.TestDrive.Enabled = $true
+    $PesterConfig.TestRegistry.Enabled = $false
+}
+#endregion
+
+#region Pester
+Task 'Test' {
+    Invoke-Pester -Configuration $PesterConfig
+}
+Task 'Test-CI' -Description "CodeCoverage enabled tests" {
+    $PesterConfigCI = $PesterConfig
+    $PesterConfigCI.CodeCoverage.Enabled = $true
+    $PesterConfigCI.CodeCoverage.Path = ( Get-ChildItem $ModuleSrc_Root -Recurse -File | Where-Object Extension -eq '.ps1' | Select-Object -ExpandProperty FullName )
+    $PesterConfigCI.CodeCoverage.ExcludeTests = $true
+
+    Invoke-Pester -Configuration $PesterConfigCI
+}
+Task 'Test-Diag' {
+    $PesterConfigDiag = $PesterConfig
+    $PesterConfigDiag.Debug.WriteDebugMessages = $true
+    $PesterConfigDiag.Output.Verbosity = 'Diagnostic'
+
+    Invoke-Pester -Configuration $PesterConfigDiag
+}
+#endregion
+
+#region Lint
+Task 'Lint' -Depends 'Prettier', 'Markdownlint', 'ScriptAnalyzer'
+Task 'Prettier' {
+    exec {
+        npx prettier . --check
+    }
+}
+Task 'Markdownlint' {
+    exec {
+        npx markdownlint-cli2 --config .markdownlint-cli2.jsonc
+    }
+}
+Task 'ScriptAnalyzer' {
+    Invoke-ScriptAnalyzer -Path $ModuleSrc_Root -Recurse -Settings (Join-Path $root 'PSScriptAnalyzerSettings.psd1')
+} -Description 'Executes PSScriptAnalyzer'
+#endregion
+
+#region Misc
+Task 'Clean' {
+    # Clears temporary files
+    $files = @(
+        (Join-Path $root "node_modules")
+        (Join-Path $root "package.json")
+        (Join-Path $root "package-lock.json")
+        (Join-Path $root "testResults.xml")
+        (Join-Path $root "coverage.xml" )
+    )
+
+    foreach ($file in $files) {
+        if (Test-Path $file) {
+            Remove-Item -Path $file -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    }
+
+    Get-ChildItem -Path $root -Filter "*.log" -File -Recurse | ForEach-Object {
+        Remove-Item -Path $_.FullName -Force -ErrorAction SilentlyContinue
+    }
+}
+#endregion

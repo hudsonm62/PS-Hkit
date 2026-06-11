@@ -7,6 +7,17 @@ BeforeDiscovery {
     }
 }
 
+Describe "Assert-WindowsDevice" {
+    InModuleScope Hkit {
+        It "should should not throw on Windows" {
+            { Assert-WindowsDevice } | Should -Not -Throw
+        } -Skip:($IsLinux -or $IsMacOS)
+        It "should throw on non-Windows" {
+            { Assert-WindowsDevice } | Should -Throw
+        } -Skip:($PSVersionTable.PSVersion.Major -ge 6 -and (-not $IsLinux -or -not $IsMacOS))
+    }
+}
+
 Describe "ConvertFrom-Bytes" {
     BeforeAll {
         $Bytes = 12345678910
@@ -44,7 +55,7 @@ Describe "Find-UninstallKey" {
         $result = Find-UninstallKey -Name $appName
         $result | Should -Not -BeNullOrEmpty
     }
-} -Skip:($PSVersionTable.PSVersion.Major -ge 6 -and ($IsLinux -or $IsMacOS))
+} -Skip:($IsLinux -or $IsMacOS)
 
 Describe "Get-AvailableDriveLetter" {
     It "should return an available drive letter" {
@@ -56,7 +67,15 @@ Describe "Get-AvailableDriveLetter" {
         $result | Should -Not -BeNullOrEmpty
         $result.Count | Should -BeGreaterThan 1
     }
-} -Skip:($PSVersionTable.PSVersion.Major -ge 6 -and ($IsLinux -or $IsMacOS))
+    It "should exclude specified letters" {
+        $excluded = @('C', 'D')
+        $result = Get-AvailableDriveLetter -ExcludedLetters $excluded -All
+        $result | Should -Not -BeNullOrEmpty
+        foreach($letter in $excluded){
+            $result | Should -Not -Contain "$letter`:"
+        }
+    }
+} -Skip:($IsLinux -or $IsMacOS)
 
 Describe "Get-CIDRHost" {
     It "should return 254 hosts for a /24 subnet" {
@@ -77,6 +96,11 @@ Describe "Get-PublicIP" {
     It "should return a public IP address" {
         $result = Get-PublicIP
         $result | Should -Not -BeNullOrEmpty
+        [System.Net.IPAddress]::TryParse($result, [ref]$null) | Should -Be $true
+    }
+    It "should return a public IPv6 address when forced" {
+        $result = Get-PublicIP -ForceIPv6
+        $result | Should -Not -BeNullOrEmpty
     }
 }
 
@@ -93,7 +117,7 @@ Describe "Get-WindowsDisplayVersion" {
         $result = Get-WindowsDisplayVersion
         $result | Should -Not -BeNullOrEmpty
     }
-} -Skip:($PSVersionTable.PSVersion.Major -ge 6 -and ($IsLinux -or $IsMacOS))
+} -Skip:($IsLinux -or $IsMacOS)
 
 Describe "Read-EDID" {
     It "should read EDID properly" {
@@ -104,20 +128,18 @@ Describe "Read-EDID" {
 
 Describe "Repair-NameConflict" {
     BeforeAll {
-        $NewFile = (Join-Path $env:TEMP "UniqueFile.txt")
-        $p = (Join-Path $env:TEMP "TestFile.txt")
+        $NewFile = (Join-Path "TestDrive:/" "UniqueFile.txt")
+        $p = (Join-Path "TestDrive:/" "TestFile.txt")
         New-Item -Path $p -ItemType File -Force | Out-Null
     }
     It "should repair name conflicts" {
-        $result = Repair-NameConflict -Path $p
-        $result | Should -Be (Join-Path $env:TEMP "TestFile (1).txt")
+        $ConflictRepair = Repair-NameConflict -Path $p
+        $result = New-Item $ConflictRepair -Force
+        $result.BaseName | Should -Be "TestFile (1)"
     }
     It "should not change names if no conflict" {
         $result = Repair-NameConflict -Path $newFile
         $result | Should -Be $newFile
-    }
-    AfterAll {
-        Remove-Item -Path $p -Force
     }
 }
 
@@ -133,5 +155,32 @@ Describe "Test-Command" {
     It "should return $false for non-existing command" {
         $result = Test-Command commandthatdoesntexist
         $result | Should -Be $false
+    }
+}
+
+Describe "Write-Console" {
+    It "should write INFO level messages to the information stream" {
+        $result = Write-Console -Message "Test INFO" -Level "INFO" 6>&1
+        $result.MessageData | Should -Be "Test INFO"
+    }
+
+    It "should write WARNING level messages to the warning stream" {
+        $result = Write-Console -Message "Test WARNING" -Level "WARNING" 3>&1
+        $result.Message | Should -Be "Test WARNING"
+    }
+
+    It "should write DEBUG level messages to the debug stream" {
+        $result = Write-Console -Message "Test DEBUG" -Level "DEBUG" -Debug 5>&1
+        $result.Message | Should -Be "Test DEBUG"
+    }
+
+    It "should write ERROR level messages to the error stream" {
+        { Write-Console -Message "Test ERROR" -Level "ERROR" -ErrorAction Stop } |
+            Should -Throw
+    }
+
+    It "should throw CRITICAL level messages" {
+        { Write-Console -Message "Test CRITICAL" -Level "CRITICAL" } |
+            Should -Throw
     }
 }

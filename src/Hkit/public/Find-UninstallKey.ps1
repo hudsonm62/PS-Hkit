@@ -1,3 +1,15 @@
+<#
+.SYNOPSIS
+    Searches registry for registered packages.
+
+.DESCRIPTION
+    Search registry for registered packages and software.
+
+    WARNING: Not all software registers itself here, especially portable applications. Some applications may also not specify a DisplayName and/or UninstallString.
+
+.PARAMETER Name
+    DisplayName of Package - Wildcards are supported.
+#>
 function Find-UninstallKey {
     [CmdletBinding()]
     param (

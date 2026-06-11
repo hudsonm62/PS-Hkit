@@ -1,6 +1,26 @@
+<#
+.SYNOPSIS
+    Converts a byte value to a human readable format in the specified unit of measurement - Defaults to GB.
+.DESCRIPTION
+    Converts a byte value to a human readable format in the specified unit of measurement - Defaults to GB.
+.PARAMETER Bytes
+    The byte value to convert.
+.PARAMETER DecimalPlaces
+    The number of decimal places to round to. Ignored if -NoRounding is specified.
+.PARAMETER NoRounding
+    If specified, the output will not be rounded and DecimalPlaces will be ignored.
+.PARAMETER KB
+    Convert to Kilobytes.
+.PARAMETER MB
+    Convert to Megabytes.
+.PARAMETER GB
+    Convert to Gigabytes. (Default)
+.PARAMETER TB
+    Convert to Terabytes.
+#>
 function ConvertFrom-Bytes {
     [CmdletBinding(DefaultParameterSetName = 'GB')]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Checked via switch')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Checked via ParameterSetName')]
     param (
         [Parameter(Mandatory, ValueFromPipeline, Position = 0)]
         [long]$Bytes,
@@ -24,16 +44,15 @@ function ConvertFrom-Bytes {
         [switch]$TB = $false
     )
     process {
-        $Size = $null
-        switch($PSCmdlet.ParameterSetName){
-            "KB" { $Size = 1KB ; break }
-            "MB" { $Size = 1MB ; break }
-            "GB" { $Size = 1GB ; break }
-            "TB" { $Size = 1TB ; break }
+        $Size = switch($PSCmdlet.ParameterSetName){
+            "KB" { 1KB ; break }
+            "MB" { 1MB ; break }
+            "GB" { 1GB ; break }
+            "TB" { 1TB ; break }
 
             Default {
                 # default to gb
-                $Size = 1GB
+                1GB
             }
         }
 

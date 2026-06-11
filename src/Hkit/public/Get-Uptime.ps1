@@ -5,6 +5,7 @@
     Calls the original Get-Uptime cmdlet in PS6+, otherwise falls back to a custom implementation that functions identically.
 #>
 function Get-Uptime {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidOverwritingBuiltInCmdlets', '', Justification = 'Backporting to PS5.1')]
     [CmdletBinding()]
     param(
         [switch]$Since
@@ -12,6 +13,7 @@ function Get-Uptime {
     if($PSVersionTable.PSVersion.Major -ge 6) {
         return Microsoft.PowerShell.Utility\Get-Uptime @PSBoundParameters # Get-Uptime was added in PS6
     } else {
+        Assert-WindowsDevice
         $LastBootTime = (Get-CimInstance -ClassName Win32_OperatingSystem -Property LastBootUpTime).LastBootUpTime
         if($Since){ return $LastBootTime }
         return ((Get-Date) - $LastBootTime)

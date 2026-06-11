@@ -4,27 +4,27 @@
 ### OVERRIDES ###
 
 # CRLF => LF
-*.md            text  eol=lf
-*.gitattributes text  eol=lf
-*.gitignore     text  eol=lf
-*.svg           text  eol=lf
-*.jsonc         text  eol=lf
-*.json          text  eol=lf
-*.yml           text  eol=lf
-*.js            text  eol=lf
-*.scss          text  eol=lf
-*.prettierrc    text  eol=lf
+*.md             text  eol=lf
+*.gitattributes  text  eol=lf
+*.gitignore      text  eol=lf
+*.svg            text  eol=lf
+*.jsonc          text  eol=lf
+*.json           text  eol=lf
+*.yml            text  eol=lf
+*.js             text  eol=lf
+*.scss           text  eol=lf
+*.prettierrc     text  eol=lf
 *.prettierignore text  eol=lf
-**/LICENSE      text  eol=lf
+**/LICENSE       text  eol=lf
+*.ps1            text  eol=lf
+*.psm1           text  eol=lf
+*.psd1           text  eol=lf
+*.psc1           text  eol=lf
+*.ps1xml         text  eol=lf
+*.clixml         text  eol=lf
+*.xml            text  eol=lf
 
 # LF => CRLF
-*.ps1    text  eol=crlf
-*.psm1   text  eol=crlf
-*.psd1   text  eol=crlf
-*.psc1   text  eol=crlf
-*.ps1xml text  eol=crlf
-*.clixml text  eol=crlf
-*.xml    text  eol=crlf
 *.xaml   text  eol=crlf
 *.url    text  eol=crlf
 *.theme  text  eol=crlf

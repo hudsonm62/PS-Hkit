@@ -4,7 +4,7 @@
 RootModule = 'Hkit.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.0.0'
+ModuleVersion = '1.1.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -22,7 +22,7 @@ CompanyName = ''
 Copyright = '(c) Hudson M.'
 
 # Description of the functionality provided by this module
-Description = 'PS functions to Improve QOL'
+Description = 'A Collection of PowerShell functions to improve QoL for sysadmins and PowerUsers.'
 
 # Minimum version of the PowerShell engine required by this module
 PowerShellVersion = '5.1'
@@ -90,10 +90,10 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = @('toolkit', 'sysadmin', 'utilities', 'windows', 'linux')
+        Tags = 'toolkit','sysadmin','utilities','windows','linux','crossplatform'
 
         # A URL to the license for this module.
-        LicenseUri = ''
+        LicenseUri = 'https://raw.githubusercontent.com/hudsonm62/PS-Hkit/refs/heads/master/LICENSE'
 
         # A URL to the main website for this project.
         ProjectUri = 'https://github.com/hudsonm62/PS-Hkit'

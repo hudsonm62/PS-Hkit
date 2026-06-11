@@ -1,15 +1,6 @@
 name: Module Releaser
 
-on:
-  pull_request:
-    types: [synchronize, closed]
-    branches: ["master"]
-    paths:
-      - ".github/workflows/publish.yml"
-      - "src/Hkit/**"
-      - "scripts/publish.ps1"
-
-  workflow_dispatch:
+on: workflow_dispatch
 
 permissions:
   contents: write
@@ -21,18 +12,17 @@ defaults:
 
 jobs:
   GitHub:
-    # create for merged PRs only
-    # if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     outputs:
       module_path: ${{ steps.zip.outputs.module_path }}
+      version: ${{ steps.get_version.outputs.module_version }}
 
     steps:
       - name: ⚙️ Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: 🧪 Extract Module Version
         id: get_version
@@ -48,13 +38,10 @@ jobs:
           $Tag = "v$ModuleVersion"
 
           git fetch --tags
-
           $tagExists = git tag --list $Tag
-
           if ($tagExists) {
             throw "❌ Tag '$Tag' already exists. Aborting release."
           }
-
           Write-Host "✅ Tag '$Tag' does not exist. Proceeding with release."
 
           # Set output for next step
@@ -62,7 +49,6 @@ jobs:
 
       - name: 🏷️ Create Tag
         id: create-tag
-        shell: pwsh
         run: |
           $Tag = "${{ steps.check-tag.outputs.module_version }}"
           git config user.name "github-actions[bot]"
@@ -77,37 +63,40 @@ jobs:
           $ReleaseFolder = './dist'
           $ReleasePath = Join-Path -Path $ReleaseFolder -ChildPath "Hkit.zip"
           New-Item -ItemType Directory -Path $ReleaseFolder -Force
-          Compress-Archive -Path "$ModulePath/*" -DestinationPath $ReleasePath -Force
-          echo "release_path=$ReleasePath" >> $env:GITHUB_OUTPUT
+          Compress-Archive -Path "$ModulePath" -DestinationPath $ReleasePath -Force
 
-          $ModuleRoot = Join-Path -Path $ModulePath -ChildPath "Hkit"
-          echo "module_path=$ModuleRoot" >> $env:GITHUB_OUTPUT
+          echo "release_path=$ReleasePath" >> $env:GITHUB_OUTPUT
+          echo "module_path=$ModulePath" >> $env:GITHUB_OUTPUT
 
       - name: 🚀 Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ steps.check-tag.outputs.module_version }}
           name: "Module ${{ steps.check-tag.outputs.module_version }}"
           generate_release_notes: true
           prerelease: false
           fail_on_unmatched_files: true
+          #discussion_category_name: "Releases"
+          body: |
+            Release Notes for all versions under [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/master/CHANGELOG.md)
+
+            ```powershell
+            Update-Module Hkit -RequiredVersion ${{ steps.get_version.outputs.module_version }} -Scope CurrentUser
+            ```
+          append_body: true
           files: ${{ steps.zip.outputs.release_path }}
 
       - name: 🥨 Release Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: release_Hkit-${{ steps.check-tag.outputs.module_version }}
           path: ${{ steps.zip.outputs.release_path }}
           if-no-files-found: error
           compression-level: 9
 
-  PSGallery:
-    needs: GitHub
-    runs-on: ubuntu-latest
-    steps:
-      - name: ⚙️ Checkout code
-        uses: actions/checkout@v5
-
       - name: 📦 Publish to PSGallery
+        id: publish
         run: |
-          ./scripts/publish.ps1 -Path "${{ needs.GitHub.outputs.module_path }}" -APIKey "${{ secrets.PSGALLERY_KEY }}"
+          ./scripts/publish.ps1 -APIKey "$env:PSGALLERY_KEY" -Path "${{ steps.zip.outputs.module_path }}"
+        env:
+          PSGALLERY_KEY: ${{ secrets.PSGALLERY_KEY }}
