@@ -3,7 +3,7 @@
 Common set of functions for PowerShell for use in scripts, third-party modules, and other PowerShell tasks.
 
 ```powershell
-Install-Module Hkit
+Install-Module Hkit -Scope CurrentUser
 ```
 
 ## Windows / Linux / MacOS Compatibility
