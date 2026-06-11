@@ -1,5 +1,5 @@
 [string]$Root = (Get-Item -Path $PSScriptRoot -Force)
-[string]$ModuleName = (Split-Path -Path $Root -Leaf)
+[string]$ModuleName = "Hkit"
 
 # paths
 $PublicPath  = Join-Path $Root "public"
