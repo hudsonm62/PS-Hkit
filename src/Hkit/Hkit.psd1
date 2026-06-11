@@ -102,7 +102,7 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = 'https://github.com/hudsonm62/PS-Hkit/releases'
+        ReleaseNotes = 'https://github.com/hudsonm62/PS-Hkit/blob/master/CHANGELOG.md'
 
         # Prerelease string of this module
         # Prerelease = ''
